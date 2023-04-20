@@ -41,7 +41,7 @@ export default class Checkout extends Component {
     componentDidMount() {
         this.setState({
             checkoutCart: this.props.route.params.cart,
-            tableNum: this.props.route.params.tableNumber,
+            table: this.props.route.params.tableNumber,
         }, () => { this.cartCost() })
 
     }
@@ -69,7 +69,7 @@ export default class Checkout extends Component {
 
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <Text style={[styles.text, { flex: 1, height: '100%', alignSelf: 'center' }]}>Checkout</Text>
-                        <Text style={[styles.text, { flex: 1, height: '80%', top: '10%', alignSelf: 'center', fontSize: 18 }]}>SubTotal: £{Number(this.state.amount/100)}</Text>
+                        <Text style={[styles.text, { flex: 1, height: '80%', top: '10%', alignSelf: 'center', fontSize: 18 }]}>SubTotal: £{Number(this.state.amount / 100)}</Text>
                     </View>
                     <View style={{ flex: 6 }}>
                         <FlatList
@@ -92,10 +92,15 @@ export default class Checkout extends Component {
                             }}
                         />
                     </View>
-                    <View style={{ flex: 2 }}>
-
-                        <Button onPress={()=>{this.props.navigation.navigate('Success', { cart: this.state.checkoutCart, tableNumber: this.state.table })}}>press</Button>
-
+                    <View style={{ flex: 3 }}>
+                        <Button onPress={() => {
+                            this.props.navigation.navigate('Success', {
+                                cart: this.state.checkoutCart, tableNumber: this.state.table,
+                                customerName: 'jdiowj', orderCost: this.state.amount
+                            })
+                        }}>
+                            press
+                        </Button>
                         <PayPalScriptProvider options={{
                             'client-id': 'AYm5zyL0uROMHbj3XptgNfeBZUiALgxgmDMwBQcEQBxK4r7gYq-p1hDe_v-uWfxu7EThI7qr5KsMC6xA',
                             'currency': this.state.currency
@@ -107,7 +112,7 @@ export default class Checkout extends Component {
                                             purchase_units: [
                                                 {
                                                     amount: {
-                                                        value: this.state.amount/100,
+                                                        value: this.state.amount / 100,
                                                     },
                                                 },
                                             ],
@@ -119,8 +124,10 @@ export default class Checkout extends Component {
                                 }}
                                 onApprove={(data, actions) => {
                                     return actions.order.capture().then((details) => {
-                                        console.log(details.payer.name.given_name)
-                                        this.props.navigation.navigate('Success', { cart: this.state.checkoutCart, tableNumber: this.state.table })
+                                        this.props.navigation.navigate('Success', {
+                                            cart: this.state.checkoutCart, tableNumber: this.state.table,
+                                            customerName: details.payer.name.given_name, orderCost: this.state.amount
+                                        })
                                     });
                                 }}
                                 onCancel={function (data, actions) {
@@ -175,6 +182,48 @@ export default class Checkout extends Component {
                                     return actions.order.capture().then(function () {
                                         // Your code here after capture the order
                                         console.log('canceled')
+                                    });
+                                }}
+                            />
+                        </PayPalScriptProvider>
+
+
+
+
+
+
+                        <PayPalScriptProvider options={{
+                            'client-id': 'AYm5zyL0uROMHbj3XptgNfeBZUiALgxgmDMwBQcEQBxK4r7gYq-p1hDe_v-uWfxu7EThI7qr5KsMC6xA',
+                            'currency': this.state.currency
+                        }}>
+                            <PayPalButtons
+                                createOrder={(data, actions) => {
+                                    return actions.order
+                                        .create({
+                                            purchase_units: [
+                                                {
+                                                    amount: {
+                                                        value: this.state.amount/100,
+                                                    },
+                                                },
+                                            ],
+                                        })
+                                        .then((orderId) => {
+                                            // Your code here after create the order
+                                            return orderId;
+                                        });
+                                }}
+                                onApprove={(data, actions) => {
+                                    return actions.order.capture().then((details) => {
+                                        console.log(details.payer.name.given_name)
+                                        this.props.navigation.navigate('Success', { cart: this.state.checkoutCart, tableNumber: this.state.table })
+                                    });
+                                }}
+                                onCancel={function (data, actions) {
+                                    return actions.order.capture().then(() => {
+                                        // Your code here after capture the order
+                                        console.log('canceled')
+                                        this.props.navigation.navigate('Menu')
                                     });
                                 }}
                             />

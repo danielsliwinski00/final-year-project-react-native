@@ -28,7 +28,7 @@ export default class Menu extends Component {
                 this.setState({
                     menuData: responseJson,
                     isLoading: false,
-                },()=>{console.log(this.state.menuData)});
+                }, () => { console.log(this.state.menuData) });
             })
             .catch((error) => {
                 console.log(error);
@@ -118,14 +118,14 @@ export default class Menu extends Component {
     }
 
     isItemSpecial = (id) => {
-        if(this.state.menuData.find(data => data.id == id)){
+        if (this.state.menuData.find(data => data.id == id)) {
             var index = this.state.menuData.findIndex(data => data.id == id)
 
-            switch(true){
-                case Number(this.state.menuData[index].special)==1:{
+            switch (true) {
+                case Number(this.state.menuData[index].special) == 1: {
                     return "*special*"
                 }
-                default:{
+                default: {
                     return ""
                 }
             }
@@ -135,18 +135,18 @@ export default class Menu extends Component {
     componentDidMount() {
         this.getTable();
         this.getMenu();
-
-        this.props.navigation.addListener('focus', async () => {
-            await this.setState({
-                isLoading: true,
-                menuData: [],
-                cartItems: [],
-                table: 0,
-                counterUpdate: 0,
-            })
-            this.getTable();
-            this.getMenu();
-        });
+        /*
+                this.props.navigation.addListener('focus', async () => {
+                    await this.setState({
+                        isLoading: true,
+                        menuData: [],
+                        cartItems: [],
+                        table: 0,
+                        counterUpdate: 0,
+                    })
+                    this.getTable();
+                    this.getMenu();
+                });*/
     }
 
     componentWillUnmount() {
@@ -156,22 +156,26 @@ export default class Menu extends Component {
     render() {
         if (this.state.isLoading == true) {
             return (
-                <View style={[{top:'50%'}]}>
+                <View style={[{ top: '50%' }]}>
                     <ActivityIndicator />
                 </View>
             )
         }
         return (
             <View style={[styles.viewHome]}>
-                <View style={[{ flex: 1, }]}>
-                    <TouchableOpacity style={[styles.cartBtn]} onPress={() => this.goToCheckout()}>
-                        <Image style={[styles.cartLogo]} source={require('./assets/images/basket.png')} />
-                    </TouchableOpacity>
-                </View>
-                <View style={[{ flex: 1, }]}>
-                    <Text style={[styles.text, { alignSelf: 'center' }]}>
-                        Table: {this.state.table}
-                    </Text>
+                <View style={[{ flex: 1, flexDirection: 'row' }]}>
+                    <View style={[{ flex: 1, }]}>
+                    </View>
+                    <View style={[{ flex: 2, alignSelf: 'center', alignItems: 'center' }]}>
+                        <Text style={[styles.text,]}>
+                            Table: {this.state.table}
+                        </Text>
+                    </View>
+                    <View style={[{ flex: 1, alignSelf: 'flex-end' }]}>
+                        <TouchableOpacity style={[styles.cartBtn, { marginTop: -60 }]} onPress={() => this.goToCheckout()}>
+                            <Image style={[styles.cartLogo]} source={require('./assets/images/basket.png')} />
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 <View style={[{ flex: 8, }]}>
                     <FlatList
@@ -179,56 +183,64 @@ export default class Menu extends Component {
                         data={this.state.menuData}
                         keyExtractor={item => item.id}
                         renderItem={({ item }) => {
-                            if(item.available==0){
-                                return(
-                                    <View style={[{ flex: 1, flexDirection: 'column', }]}>
-                                    <View style={[{ flex: 3, flexDirection: 'row', }]}>
-                                        <View style={[{ flex: 7, height: 60, }]}>
-                                            <Text style={[styles.menuText, { fontSize: 15, color:'gray' }]}>
-                                                {item.dish} - unavailable
-                                            </Text>
+                            if (item.available == 0) {
+                                return (
+                                    <View style={[{ flex: 1, flexDirection: 'column', marginTop: 5 }]}>
+                                        <View style={[{ flex: 3, flexDirection: 'row', }]}>
+                                            <View style={[{ flex: 9, height: 60, }]}>
+                                                <Text style={[styles.menuText, { fontSize: 20, color:'gray' }]}>
+                                                    {item.dish}
+                                                </Text>
+                                            </View>
+                                            <View style={[{ flex: 2, }]}>
+                                                <Text style={[styles.menuText, { fontSize: 15 }]}>{this.getAmount(item.id)}
+                                                </Text>
+                                            </View>
+                                            <View style={[{ flex: 3, flexDirection: 'row', height: 70 }]}>
+                                            </View>
                                         </View>
-                                        <View style={[{ flex: 1, }]}>
-                                            <Text style={[styles.menuText, { fontSize: 13 }]}>{this.getAmount(item.id)}
-                                            </Text>
-                                        </View>
-                                        <View style={[{ flex: 2, flexDirection: 'row', height: 70 }]}>
-                                            <TouchableOpacity
-                                                style={[styles.cartAddBtn, { flex: 1, height: '45%' }]}
-                                                onPress={() => { this.remItem(item.id, item.price) }}>
-                                                <Text style={[styles.cartAddBtnText,]}>-</Text>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                style={[styles.cartAddBtn, { flex: 1, height: '45%' }]}
-                                                onPress={() => { this.addItem(item.dish, item.id, item.price) }}>
-                                                <Text style={[styles.cartAddBtnText,]}>+</Text>
-                                            </TouchableOpacity>
+                                        <View style={[{ flex: 2, flexDirection: 'column', }]}>
+
+                                            <View style={[{ flex: 1, flexDirection: 'row', }]}>
+                                                <View style={[{ flex: 7, marginTop: -15, }]}>
+                                                    <Text style={[styles.menuTextDesc, { fontSize: 12, color:'gray' }]}>{item.desc}
+                                                    </Text>
+                                                    <View style={[{ flex: 1, flexDirection: 'row' }]}>
+                                                        <View style={[{ flex: 3, marginTop: 0, }]}>
+                                                            <Text style={[styles.menuText, { fontSize: 20, color: 'gray' }]}>
+                                                                unavailable
+                                                            </Text>
+                                                        </View>
+                                                        <View style={[{ flex: 1, marginTop: 0, }]}>
+                                                        </View>
+                                                        <View style={[{ flex: 1, marginTop: 0, }]}>
+                                                        </View>
+                                                    </View>
+                                                </View>
+                                                <View style={[{ flex: 1, }]}>
+                                                </View>
+                                                <View style={[{ flex: 2, }]}>
+                                                </View>
+                                            </View>
+
                                         </View>
                                     </View>
-                                    <View style={[{ flex: 1, marginTop: -10, }]}>
-                                        <Text style={[styles.menuTextDesc,]}>{item.desc}
-                                        </Text>
-                                    </View>
-                                    <View style={[{ flex: 1, marginTop: 0, }]}>
-                                        <Text style={[styles.menuTextDesc, {color:'red'}]}>{this.isItemSpecial(item.id)}
-                                        </Text>
-                                    </View>
-                                </View>
+
                                 )
                             }
                             return (
-                                <View style={[{ flex: 1, flexDirection: 'column', }]}>
+                                <View style={[{ flex: 1, flexDirection: 'column', marginTop: 5 }]}>
                                     <View style={[{ flex: 3, flexDirection: 'row', }]}>
-                                        <View style={[{ flex: 7, height: 60, }]}>
-                                            <Text style={[styles.menuText, { fontSize: 15 }]}>
-                                                {item.dish} - £{item.price / 100}
+                                        <View style={[{ flex: 9, height: 60, }]}>
+                                            <Text style={[styles.menuText, { fontSize: 20 }]}>
+                                                {item.dish}
                                             </Text>
                                         </View>
-                                        <View style={[{ flex: 1, }]}>
-                                            <Text style={[styles.menuText, { fontSize: 13 }]}>{this.getAmount(item.id)}
+                                        <View style={[{ flex: 2, }]}>
+                                            <Text style={[styles.menuText, { fontSize: 15 }]}>{this.getAmount(item.id)}
                                             </Text>
                                         </View>
-                                        <View style={[{ flex: 2, flexDirection: 'row', height: 70 }]}>
+                                        <View style={[{ flex: 3, flexDirection: 'row', height: 70 }]}>
                                             <TouchableOpacity
                                                 style={[styles.cartAddBtn, { flex: 1, height: '45%' }]}
                                                 onPress={() => { this.remItem(item.id, item.price) }}>
@@ -241,13 +253,30 @@ export default class Menu extends Component {
                                             </TouchableOpacity>
                                         </View>
                                     </View>
-                                    <View style={[{ flex: 1, marginTop: -10, }]}>
-                                        <Text style={[styles.menuTextDesc,]}>{item.desc}
-                                        </Text>
-                                    </View>
-                                    <View style={[{ flex: 1, marginTop: 0, }]}>
-                                        <Text style={[styles.menuTextDesc, {color:'red'}]}>{this.isItemSpecial(item.id)}
-                                        </Text>
+                                    <View style={[{ flex: 2, flexDirection: 'column', }]}>
+                                        <View style={[{ flex: 1, flexDirection: 'row', }]}>
+                                            <View style={[{ flex: 7, marginTop: -15, }]}>
+                                                <Text style={[styles.menuTextDesc, { fontSize: 12 }]}>{item.desc}
+                                                </Text>
+                                                <View style={[{ flex: 1, flexDirection: 'row' }]}>
+                                                    <View style={[{ flex: 3, marginTop: 0, }]}>
+                                                        <Text style={[styles.menuTextDesc, { fontSize: 18, marginTop: 5 }]}>£{item.price / 100}
+                                                        </Text>
+                                                    </View>
+                                                    <View style={[{ flex: 3, marginTop: 0, }]}>
+                                                        <Text style={[styles.menuTextDesc, { color: 'red', fontSize: 18, marginTop: 5, marginLeft: -30 }]}>{this.isItemSpecial(item.id)}
+                                                        </Text>
+                                                    </View>
+                                                    <View style={[{ flex: 1, marginTop: 0, }]}>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                            <View style={[{ flex: 1, }]}>
+                                            </View>
+                                            <View style={[{ flex: 2, }]}>
+                                            </View>
+                                        </View>
+
                                     </View>
                                 </View>
                             )
