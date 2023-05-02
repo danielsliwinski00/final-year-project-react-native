@@ -19,7 +19,8 @@ const styles = StyleSheet.create({
         marginTop: 45,
         padding: 5, 
         flex: 1, 
-        justifyContent: 'flex-start'
+        justifyContent: 'flex-start',
+        backgroundColor:'#f2f2f2'
     },
     viewHome:{
         padding: 5, 
@@ -60,7 +61,6 @@ const styles = StyleSheet.create({
         flex:8,
     },
     cartAddBtn:{
-        //backgroundColor: '#f4717f',
         margin: 5,
         borderRadius: 5,
         borderWidth:1,
@@ -88,7 +88,59 @@ const styles = StyleSheet.create({
         marginTop: -5,
         marginHorizontal: 11,
     },
-    
+    modalClickOff: {
+        width: '100%',
+        flex: 1,
+        alignSelf: 'center'
+    },
+    modalTouchableHighlightCart:{
+        height: '70%',
+        width: '80%',
+        top: '15%',
+        right: '10%',
+        borderRadius: 15,
+        position: 'absolute',
+    },
+    modalView: {
+        height: '100%',
+        width: '100%',
+        borderRadius: 15,
+        position: 'absolute',
+        backgroundColor: '#e7e8e9',
+        borderColor:'#f4717f',
+        borderWidth: 4,
+    },
+    modalButton: {
+        marginTop: '5%',
+        height: '8%',
+        alignSelf: 'center',
+        width: '80%',
+        textAlign: 'center',
+        borderRadius: 5,
+        borderWidth: 2,
+        borderColor: '#000000',
+        textAlignVertical: 'center'
+    },
+    modalButtonCancel: {
+        marginVertical: '5%',
+        height: '8%',
+        alignSelf: 'center',
+        width: '40%',
+        textAlign: 'center',
+        borderRadius: 5,
+        borderWidth: 2,
+        borderColor: '#000000',
+        textAlignVertical: 'center'
+    },
+    modalButtonText: {
+        fontWeight: 600,
+        fontSize: 20,
+        color: '#2e4052',
+        paddingHorizontal: 12,
+        paddingVertical: 4,
+        width: '100%',
+        height: '90%',
+    },
 })
 
 export default styles;

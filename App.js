@@ -9,7 +9,7 @@ import styles from './screens/assets/stylesheet.js';
 import Menu from './screens/menu.js'
 import Checkout from './screens/checkout.js'
 import Success from './screens/success.js'
-
+import Toast from "react-native-toast-notifications";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -30,12 +30,7 @@ export default function App() {
         }}
         />
       </Stack.Navigator>
+      <Toast ref={(ref) => global['toast'] = ref} />
     </NavigationContainer>
   );
 }
-
-/*
-        <Stack.Screen name="Checkout" component={Checkout}
-          options={{ headerTitle: "", headerTransparent: true }}
-        />
-        */

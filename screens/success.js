@@ -18,7 +18,7 @@ export default class Success extends Component {
   }
 
   sendOrder() {
-    return fetch("http://192.168.1.209:8080/api/sendorder.php",
+    return fetch("http://192.168.1.102:8080/api/sendorder.php",
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -70,7 +70,7 @@ export default class Success extends Component {
       )
     }
     return (
-      <View style={[styles.viewH, { flex: 1 }]}>
+      <View style={[styles.view, { flex: 1 }]}>
         <View style={[{ flex: 1, }]}>
           <Text style={[styles.text, { alignSelf: 'center' }]}>Successfull Payment</Text>
         </View>

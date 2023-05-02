@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { FlatList, ActivityIndicator, Text, View, Button, StyleSheet, Box, Image } from 'react-native';
-import { TouchableOpacity } from 'react-native-web';
+import { FlatList, ActivityIndicator, Text, View, Button, StyleSheet, Box, Image, ScrollView, SectionList, Modal } from 'react-native';
+import { TouchableOpacity, TouchableHighlight } from 'react-native-web';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './assets/stylesheet.js';
 
@@ -13,11 +13,17 @@ export default class Menu extends Component {
             cartItems: [],
             table: 0,
             counterUpdate: 0,
+            food: [],
+            drinks: [],
+            desserts: [],
+            allMenuData: [],
+            cartModal: false,
+            emptyCartModal: false,
         }
     }
 
     getMenu() {
-        return fetch("http://192.168.1.209:8080/api/menu.php",
+        return fetch("http://192.168.1.102:8080/api/menu.php",
             {
                 headers: { 'Content-Type': 'application/json' }
             })
@@ -27,8 +33,7 @@ export default class Menu extends Component {
             .then((responseJson) => {
                 this.setState({
                     menuData: responseJson,
-                    isLoading: false,
-                }, () => { console.log(this.state.menuData) });
+                }, () => { console.log(this.state.menuData), this.sortMenuData() });
             })
             .catch((error) => {
                 console.log(error);
@@ -100,7 +105,7 @@ export default class Menu extends Component {
     goToCheckout() {
         console.log(this.state.cartItems);
         if (!this.state.cartItems.length > 0) {
-            alert("cart empty")
+            toast.show("Cart is Empty", { type: 'danger' })
         }
         else {
             this.props.navigation.navigate("Checkout", { cart: this.state.cartItems, tableNumber: this.state.table });
@@ -132,25 +137,45 @@ export default class Menu extends Component {
         }
     }
 
+    sortMenuData() {
+        var arr = this.state.menuData;
+        var foo = {};
+        foo['title'] = 'Food';
+        foo['data'] = [];
+        var dri = {};
+        dri['title'] = 'Drinks';
+        dri['data'] = [];
+        var des = {};
+        des['title'] = 'Desserts';
+        des['data'] = [];
+
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].type == 1) {
+                foo['data'].push(arr[i]);
+            }
+            else if (arr[i].type == 2) {
+                dri['data'].push(arr[i]);
+            }
+            else if (arr[i].type == 3) {
+                des['data'].push(arr[i]);
+            }
+        }
+        var finish = [];
+        finish.push(foo);
+        finish.push(dri);
+        finish.push(des);
+        this.setState({
+            food: foo,
+            drinks: dri,
+            desserts: des,
+            allMenuData: finish,
+            isLoading: false,
+        })
+    }
+
     componentDidMount() {
         this.getTable();
         this.getMenu();
-        /*
-                this.props.navigation.addListener('focus', async () => {
-                    await this.setState({
-                        isLoading: true,
-                        menuData: [],
-                        cartItems: [],
-                        table: 0,
-                        counterUpdate: 0,
-                    })
-                    this.getTable();
-                    this.getMenu();
-                });*/
-    }
-
-    componentWillUnmount() {
-        //clearInterval(this.timerId)
     }
 
     render() {
@@ -163,6 +188,64 @@ export default class Menu extends Component {
         }
         return (
             <View style={[styles.viewHome]}>
+
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={this.state.cartModal}
+                    onRequestClose={() => {
+                        this.setState({ cartModal: false });
+                    }}>
+                    <TouchableOpacity
+                        style={[styles.modalClickOff]}
+                        activeOpacity={1}
+                        onPress={() => { this.setState({ cartModal: false }) }}
+                    >
+                        <TouchableHighlight style={[styles.modalTouchableHighlightCart]}>
+                            <View style={[styles.modalView]}>
+                                <FlatList
+                                    style={[{ alignSelf: 'center', width: '80%', height: '70%', marginTop:'5%' }]}
+                                    data={this.state.cartItems}
+                                    keyExtractor={item => item.itemid}
+                                    renderItem={({ item }) => {
+                                        return (
+                                            <View style={{ flex: 1, flexDirection: 'column' }}>
+                                                <View style={{ flex: 1, flexDirection: 'row' }}>
+                                                    <View style={{ flex: 8, height: 60 }}>
+                                                        <Text style={[styles.menuText, { fontSize: 18 }]}>{item.dish}
+                                                        </Text>
+                                                    </View>
+                                                    <View style={{ flex: 2, height: 60 }}>
+                                                        <Text style={[styles.menuText, { fontSize: 18 }]}>x{item.amount}
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                                <View style={[{ flex: 1, height: 60, marginTop: -20 }]}>
+                                                    <Text style={[styles.menuText, { fontSize: 16 }]}>£{item.price / 100}
+                                                    </Text>
+                                                </View>
+                                            </View>)
+                                    }}
+                                />
+                                <TouchableOpacity
+                                    style={[styles.modalButton]}
+                                    onPress={() => { this.setState({ cartModal: false }), this.goToCheckout() }}>
+                                    <Text style={[styles.modalButtonText,]}>
+                                        Checkout
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.modalButtonCancel]}
+                                    onPress={() => { this.setState({ cartModal: false }); }}>
+                                    <Text style={[styles.modalButtonText,]}>
+                                        Cancel
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </TouchableHighlight>
+                    </TouchableOpacity>
+                </Modal>
+
                 <View style={[{ flex: 1, flexDirection: 'row' }]}>
                     <View style={[{ flex: 1, }]}>
                     </View>
@@ -172,23 +255,26 @@ export default class Menu extends Component {
                         </Text>
                     </View>
                     <View style={[{ flex: 1, alignSelf: 'flex-end' }]}>
-                        <TouchableOpacity style={[styles.cartBtn, { marginTop: -60 }]} onPress={() => this.goToCheckout()}>
+                        <TouchableOpacity style={[styles.cartBtn, { marginTop: -60 }]} onPress={() => this.setState({ cartModal: true })}>
                             <Image style={[styles.cartLogo]} source={require('./assets/images/basket.png')} />
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View style={[{ flex: 8, }]}>
-                    <FlatList
+                <ScrollView style={[{ flex: 8, }]}>
+                    <SectionList
                         extraData={this.state.counterUpdate}
-                        data={this.state.menuData}
+                        sections={this.state.allMenuData}
                         keyExtractor={item => item.id}
+                        renderSectionHeader={({ section: { title } }) => (
+                            <Text style={[styles.text, { fontSize: 30 }]}>{title}</Text>
+                        )}
                         renderItem={({ item }) => {
                             if (item.available == 0) {
                                 return (
                                     <View style={[{ flex: 1, flexDirection: 'column', marginTop: 5 }]}>
                                         <View style={[{ flex: 3, flexDirection: 'row', }]}>
                                             <View style={[{ flex: 9, height: 60, }]}>
-                                                <Text style={[styles.menuText, { fontSize: 20, color:'gray' }]}>
+                                                <Text style={[styles.menuText, { fontSize: 20, color: 'gray' }]}>
                                                     {item.dish}
                                                 </Text>
                                             </View>
@@ -203,7 +289,7 @@ export default class Menu extends Component {
 
                                             <View style={[{ flex: 1, flexDirection: 'row', }]}>
                                                 <View style={[{ flex: 7, marginTop: -15, }]}>
-                                                    <Text style={[styles.menuTextDesc, { fontSize: 12, color:'gray' }]}>{item.desc}
+                                                    <Text style={[styles.menuTextDesc, { fontSize: 12, color: 'gray' }]}>{item.desc}
                                                     </Text>
                                                     <View style={[{ flex: 1, flexDirection: 'row' }]}>
                                                         <View style={[{ flex: 3, marginTop: 0, }]}>
@@ -222,10 +308,8 @@ export default class Menu extends Component {
                                                 <View style={[{ flex: 2, }]}>
                                                 </View>
                                             </View>
-
                                         </View>
                                     </View>
-
                                 )
                             }
                             return (
@@ -276,13 +360,13 @@ export default class Menu extends Component {
                                             <View style={[{ flex: 2, }]}>
                                             </View>
                                         </View>
-
                                     </View>
                                 </View>
                             )
-                        }}
+                        }
+                        }
                     />
-                </View>
+                </ScrollView>
             </View>
         );
     }
