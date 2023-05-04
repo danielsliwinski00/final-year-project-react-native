@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { FlatList, ActivityIndicator, Text, View, Button, StyleSheet, Box, Image, ScrollView, SectionList, Modal } from 'react-native';
 import { TouchableOpacity, TouchableHighlight } from 'react-native-web';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './assets/stylesheet.js';
 
 export default class Menu extends Component {

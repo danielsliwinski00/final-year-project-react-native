@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { FlatList, ActivityIndicator, Text, View, Button, StyleSheet, Box, Image } from 'react-native';
 import { TouchableOpacity } from 'react-native-web';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './assets/stylesheet.js';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
