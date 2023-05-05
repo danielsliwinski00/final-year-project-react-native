@@ -22,7 +22,7 @@ export default class Menu extends Component {
     }
 
     getMenu() {
-        return fetch("https://main.d1p1yoybex63ld.amplifyapp.com/menu.php",
+        return fetch("http://16.16.126.246/menu.php",
             {
                 headers: { 'Content-Type': 'application/json' }
             })
