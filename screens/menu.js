@@ -22,7 +22,7 @@ export default class Menu extends Component {
     }
 
     getMenu() {
-        return fetch("https://cors-everywhere.herokuapp.com/http://13.53.140.87/menu.php",
+        return fetch("http://13.53.140.87/menu.php",
             {
                 headers: { 'Content-Type': 'application/json' }
             })
