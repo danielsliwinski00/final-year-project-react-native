@@ -17,7 +17,7 @@ export default class Success extends Component {
   }
 
   sendOrder() {
-    return fetch("http://16.16.126.246/sendorder.php",
+    return fetch("http://localhost/final-year-project-php-api/sendorder.php",
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
